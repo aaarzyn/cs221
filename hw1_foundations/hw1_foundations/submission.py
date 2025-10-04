@@ -65,7 +65,10 @@ def normalized_inner_products(A: np.ndarray, C: np.ndarray, normalize: bool = Tr
     - Think about the Einstein notation pattern for batched dot products.
     """
     # BEGIN_YOUR_CODE
-    # TODO: Implement
+    S = einsum(A, C, 'batch m d, batch n d-> batch m n')
+    if normalize:
+        S /= np.sqrt(A.shape[-1])
+    return S
     # END_YOUR_CODE
 
 
@@ -87,7 +90,9 @@ def mask_strictly_upper(scores: np.ndarray) -> np.ndarray:
     Note that the data type should be floats.
     """
     # BEGIN_YOUR_CODE
-    # TODO: Implement
+    result = np.where(np.tril(np.ones(scores.shape[-2:])), scores, -np.inf)
+
+    return result
     # END_YOUR_CODE
 
 
@@ -108,7 +113,7 @@ def prob_weighted_sum_einsum() -> str:
     where P is a tensor with shape (B, N) and V is a tensor with shape (B, N, D).
     """
     # BEGIN_YOUR_CODE
-    # TODO: Implement
+    return 'B N, B N D -> B D'
     # END_YOUR_CODE
 
 
@@ -127,7 +132,7 @@ def gradient_warmup(w: np.ndarray, c: np.ndarray) -> np.ndarray:
     - grad: (d,)
     """
     # BEGIN_YOUR_CODE
-    # TODO: Implement
+    return 2 * ( w - c)
     # END_YOUR_CODE
 
 
@@ -147,7 +152,13 @@ def matrix_grad(A: np.ndarray, B: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     - Use broadcasting to replicate values to the correct shapes.
     """
     # BEGIN_YOUR_CODE
-    # TODO: Implement
+    grad_A_ein = einsum(B, 'k j -> k')
+    grad_A = np.broadcast_to(grad_A_ein[None, :], A.shape)
+
+    grad_B_ein = einsum(A, 'i k ->k')
+    grad_B = np.broadcast_to(grad_B_ein[:, None], B.shape)
+
+    return (grad_A, grad_B)
     # END_YOUR_CODE
 
 
@@ -168,7 +179,8 @@ def lsq_grad(w: np.ndarray, A: np.ndarray, b: np.ndarray) -> np.ndarray:
     - No Python loops.
     """
     # BEGIN_YOUR_CODE
-    # TODO: Implement
+    residual = A @ w - b
+    return A.T @ residual
     # END_YOUR_CODE
 
 
@@ -194,7 +206,10 @@ def lsq_finite_diff_grad(w: np.ndarray,
     - No Python loops over gradient components.
     """
     # BEGIN_YOUR_CODE
-    # TODO: Implement
+    w_weights = w + epsilon * np.stack([np.eye(len(w)), -np.eye(len(w))])
+    residuals = einsum(A, w_weights, 'n d, k i d -> k n i') - b[None, :, None]
+    f_vals = .5 * einsum(residuals, residuals, 'k n i, k n i -> k i')
+    return ((f_vals[0] - f_vals[1]) / (2 * epsilon))
     # END_YOUR_CODE
 
 
@@ -220,5 +235,11 @@ def gradient_descent_quadratic(x: np.ndarray, w: np.ndarray, theta0: float, lr: 
     Gradient: df/dθ = 2 * sum_i w_i * (θ - x_i).
     """
     # BEGIN_YOUR_CODE
-    # TODO: Implement
+    theta = theta0
+
+    for _ in range(num_steps):
+        gradient = 2 * np.sum(w * (theta - x))
+        theta = theta - lr * gradient
+
+    return theta    
     # END_YOUR_CODE
