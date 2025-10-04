@@ -41,7 +41,7 @@ def split_last_dim_pattern() -> str:
     where x is a tensor with shape (B, D).
     """
     # BEGIN_YOUR_CODE
-    return "B (g d) -> B g d"
+    return "b (g d) -> b g d"
     # END_YOUR_CODE
 
 
@@ -113,7 +113,7 @@ def prob_weighted_sum_einsum() -> str:
     where P is a tensor with shape (B, N) and V is a tensor with shape (B, N, D).
     """
     # BEGIN_YOUR_CODE
-    return 'B N, B N D -> B D'
+    return 'b n, b n d -> b d'
     # END_YOUR_CODE
 
 
