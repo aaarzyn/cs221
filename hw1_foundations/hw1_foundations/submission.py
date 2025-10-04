@@ -23,7 +23,10 @@ def linear_project(x: np.ndarray, W: np.ndarray, b: np.ndarray) -> np.ndarray:
     - No Python loops.
     """
     # BEGIN_YOUR_CODE
-    # TODO: Implement
+    y = einsum(x, W, 'batch d_in, d_in d_out -> batch d_out')
+    
+    return y + b
+
     # END_YOUR_CODE
 
 
@@ -38,7 +41,7 @@ def split_last_dim_pattern() -> str:
     where x is a tensor with shape (B, D).
     """
     # BEGIN_YOUR_CODE
-    # TODO: Implement
+    return "B (g d) -> B g d"
     # END_YOUR_CODE
 
 
