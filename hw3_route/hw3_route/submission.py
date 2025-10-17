@@ -39,7 +39,7 @@ class ShortestPathProblem(SearchProblem):
 
     def start_state(self) -> State:
         # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        return State(self.start_location)
         # END_YOUR_CODE
 
     def successors(self, state: State) -> List[Step]:
@@ -50,12 +50,16 @@ class ShortestPathProblem(SearchProblem):
         string represents a transition from the current location to that new location.
         """
         # BEGIN_YOUR_CODE (our solution is 7 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        neighbors = self.city_map.distances.get(state.location, {})
+        return [
+            Step(action=location, cost=distance, state=State(location))
+            for location, distance in neighbors.items()
+        ]
         # END_YOUR_CODE
 
     def is_end(self, state: State) -> bool:
         # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        return self.end_tag in self.city_map.tags.get(state.location, set())
         # END_YOUR_CODE
 
 
